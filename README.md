@@ -1,2 +1,2 @@
-# sanegames
-Play games from CrazyGames without annoyances and stuff.
+# divinegames
+Play games from CrazyGames without ads and stuff.
