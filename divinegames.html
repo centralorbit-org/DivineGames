@@ -19,7 +19,7 @@
   <meta property="og:description" content="A clean launcher UI for loading CrazyGames by slug." />
   <meta property="og:image" content="assets/thumbnail.png" />
   <meta property="og:type" content="website" />
-  <!-- IMPORTANT: set this to YOUR real domain -->
+  <!-- Set this to your real canonical URL -->
   <meta property="og:url" content="https://example.com/" />
   <meta property="og:site_name" content="DivineGames" />
 
@@ -36,24 +36,17 @@
     "@type": "WebApplication",
     "name": "DivineGames",
     "description": "A clean launcher UI for loading CrazyGames by slug.",
-    "url": "examprediction.42web.io",
+    "url": "https://example.com/",
     "image": "https://www.crazygames.com/images/logo/logo-ziggy.svg",
     "applicationCategory": "GameApplication",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "author": {
-      "@type": "Organization",
-      "name": "DivineGames"
-    }
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Organization", "name": "DivineGames" }
   }
   </script>
 
-  <!-- PostHog (kept as-is, but fixed markdown-y URLs) -->
+  <!-- Optional analytics: PostHog (leave or remove) -->
   <script>
-  !function(e,t){var s,r,o,i;t.__SV||(window.posthog=t,t._i=[],t.init=function(n,a,p){function g(e,t){var s=t.split(".");2==s.length&&(e=e[s[0]],t=s[1]),e[t]=function(){e.push([t].concat(Array.prototype.slice.call(arguments,0)))}}(o=e.createElement("script")).type="text/javascript",o.crossOrigin="anonymous",o.async=!0,o.src=a.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(i=e.getElementsByTagName("script")[0]).parentNode.insertBefore(o,i);var c=t;for(void 0!==p?c=t[p]=[]:p="posthog",c.people=c.people||[],c.toString=function(e){var t="posthog";return"posthog"!==p&&(t+="."+p),e||(t+=" (stub)"),t},c.people.toString=function(){return c.toString(1)+".people (stub)"},s="init bs ws ge fs capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags on onFeatureFlags identify setPersonProperties group resetGroups reset get_distinct_id getGroups get_session_id alias set_config startSessionRecording stopSessionRecording captureException loadToolbar get_property opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),r=0;r<s.length;r++)g(c,s[r]);t._i.push([n,a,p])},t.__SV=1)}(document,window.posthog||[]);
+  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags on onFeatureFlags identify setPersonProperties group resetGroups reset get_distinct_id getGroups get_session_id alias set_config startSessionRecording stopSessionRecording captureException loadToolbar get_property opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
   posthog.init("phc_W4DPbbp1Qbz4lPVtWrFF54GFUabBHpKzNJx9U6fryBZ",{
     api_host:"https://posthog.elouan.xyz/ingest",
     ui_host:"https://us.posthog.com",
@@ -61,31 +54,29 @@
   });
   </script>
 
-  <!-- Your existing stylesheet -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Small UI/particle styles (kept in HTML so it’s “one file” for the new stuff) -->
   <style>
-    /* --- Background particles canvas --- */
+    /* Background particles canvas */
     #bgParticles {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       z-index: 0;
-      pointer-events: none; /* stays non-blocking */
+      pointer-events: none;
       opacity: 0.9;
     }
 
-    /* --- Layering: make sure content sits above canvas --- */
+    /* Layering */
     body { position: relative; }
     #appShell { position: relative; z-index: 1; }
 
-    /* --- Top nav (new) --- */
+    /* Top nav */
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 5;
+      z-index: 10;
       backdrop-filter: blur(10px);
       background: rgba(15, 23, 42, 0.55);
       border-bottom: 1px solid rgba(100, 116, 139, 0.18);
@@ -105,6 +96,7 @@
       gap: 10px;
       text-decoration: none;
       color: inherit;
+      min-width: 210px;
     }
     .brand img { width: 34px; height: 34px; }
     .brand strong {
@@ -133,6 +125,7 @@
       font-size: 0.9rem;
       cursor: pointer;
       transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+      line-height: 1;
     }
     .navlinks a:hover, .navlinks button:hover {
       transform: translateY(-1px);
@@ -140,7 +133,7 @@
       background: rgba(51, 65, 85, 0.45);
     }
 
-    /* --- Page entrance animations (new) --- */
+    /* Page entrance */
     .fade-up {
       opacity: 0;
       transform: translateY(10px);
@@ -149,11 +142,13 @@
     .fade-up.d2 { animation-delay: .08s; }
     .fade-up.d3 { animation-delay: .16s; }
     .fade-up.d4 { animation-delay: .24s; }
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { animation: none; opacity: 1; transform: none; }
     }
 
-    /* --- Modal (Game Slugs) --- */
+    /* Modal */
     dialog#slugDialog {
       width: min(920px, calc(100% - 24px));
       border: 1px solid rgba(100,116,139,.25);
@@ -206,9 +201,11 @@
       font-size: .88rem;
       user-select: none;
       transition: transform .12s ease, background-color .12s ease, border-color .12s ease;
+      line-height: 1;
     }
     .pill:hover { transform: translateY(-1px); border-color: rgba(167,139,250,.55); }
     .pill.active { background: rgba(83,53,204,.35); border-color: rgba(167,139,250,.75); }
+
     .slug-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -246,26 +243,22 @@
       cursor: pointer;
       font-size: .88rem;
       text-decoration: none;
+      line-height: 1;
     }
     .mini.secondary {
       background: rgba(51, 65, 85, 0.25);
       color: #e2e8f0;
     }
-
-    /* Make sure your existing #loader / #gameInput layout still behaves */
-    #loader { position: relative; z-index: 1; }
   </style>
 </head>
 
 <body>
-  <!-- Interactive particle background -->
   <canvas id="bgParticles" aria-hidden="true"></canvas>
 
   <div id="appShell">
-    <!-- Top menu -->
     <header class="topbar" role="banner">
       <div class="topbar-inner">
-        <a class="brand" href="/" aria-label="DivineGames home">
+        <a class="brand" href="divinegames.html" aria-label="DivineGames home">
           <img src="assets/logo.png" alt="DivineGames logo" />
           <div>
             <div style="line-height:1.1"><strong>DivineGames</strong></div>
@@ -282,8 +275,12 @@
       </div>
     </header>
 
-    <!-- Keep your IDs so main.js still works -->
-    <div class="loader" id="loader" aria-label="Loading game...">Loading…</div>
+    <!-- Loader + Input container (main.js will toggle visibility) -->
+    <div class="loader" id="loader" aria-label="Loading game...">
+      <div class="spinner" aria-hidden="true"></div>
+      <div id="loaderText">Loading…</div>
+      <button id="backHomeBtn" type="button" style="display:none; margin-top:12px;">Back</button>
+    </div>
 
     <main class="loader" id="gameInput">
       <div class="hero-section fade-up">
@@ -297,13 +294,15 @@
         <p>Drag this button to your bookmarks bar, then click it on a CrazyGames game page.</p>
 
         <div style="text-align: center; margin: 0.8em 0;">
-          <!-- IMPORTANT: change HOST below to YOUR real domain -->
-           <a href="javascript:(function(){const s='sanegames.elouan.xyz',h=window.location.hostname,f=window.location.href;if(h===s){alert('Hey, don\'t CLICK me here, DRAG me to your bookmarks bar!')}else{const r=/crazygames\.(?:com|id|dev|co\.uk|net|org|[a-z]{2})\/game\/([^\/?#]+)/,m=f.match(r);if(m&&m[1]){const g=m[1],n=`https://sanegames.elouan.xyz/?game=${g}`;window.location.href=n}else{alert('Please navigate to a CrazyGames game page first, then click the bookmarklet.')}}})();"
-                    class="bookmarklet-button" draggable="true"
-                    onclick="event.preventDefault(); alert('Hey, don\'t CLICK me here, DRAG me to your bookmarks bar!');"
-                    role="button"
-                    aria-label="Drag to bookmarks bar to install SaneGames bookmarklet">
-			  >Play DivineGames</a>
+          <!-- IMPORTANT: set BOOKMARKLET_HOST to YOUR real domain, no trailing slash -->
+          <a
+            href="javascript:(function(){const BOOKMARKLET_HOST='https://example.com';const here=location.origin;const url=location.href;const host=location.hostname;if(here===BOOKMARKLET_HOST){alert(\"Don't click this here — drag it to your bookmarks bar.\");return;}const m=url.match(/crazygames\.(?:com|id|dev|co\.uk|net|org|[a-z]{2})\/game\/([^/?#]+)/i);if(m&&m[1]){location.href=BOOKMARKLET_HOST+'/?game='+encodeURIComponent(m[1]);}else{alert('Open a CrazyGames game page first (URL contains /game/<slug>).');}})();"
+            class="bookmarklet-button"
+            draggable="true"
+            onclick="event.preventDefault(); alert(`Don't click this here — drag it to your bookmarks bar.`);"
+            role="button"
+            aria-label="Drag to bookmarks bar to install DivineGames bookmarklet"
+          >Play DivineGames</a>
         </div>
 
         <p style="text-align: center; font-size: 0.85em; margin-top: 0.8em;">
@@ -320,14 +319,14 @@
             <label for="gameSlugInput" class="input-label">Game Slug:</label>
             <input type="text" placeholder="e.g., crazy-flips-3d" id="gameSlugInput" aria-label="Game slug input field. Press Enter or click Play Game to load." />
           </div>
-          <button onclick="loadGameFromInput()" aria-label="Load and play the entered game">Play Game</button>
+          <button id="playBtn" type="button" aria-label="Load and play the entered game">Play Game</button>
           <button type="button" id="openSlugsBtn2" aria-label="Open the game slugs browser" style="background: rgba(51,65,85,.35); border-color: rgba(167,139,250,.35);">
             Browse Slugs
           </button>
         </div>
 
         <p style="text-align:center; font-size: .85em; color:#94a3b8;">
-          Tip: Press <code>/</code> to focus the slug input (your existing shortcut).
+          Tip: Press <code>/</code> to focus the slug input.
         </p>
       </section>
 
@@ -339,9 +338,9 @@
       </section>
 
       <footer class="fade-up d4">
-        <p><i>DivineGames is open source (link this to your real repo): <a href="https://github.com/centralorbit-org/DivineGames" rel="noopener noreferrer">Source</a></i></p>
+        <p><i>DivineGames is open source: <a href="https://github.com/centralorbit-org/DivineGames" rel="noopener noreferrer">Source</a></i></p>
         <nav aria-label="Footer links">
-          <a href="/privacypolicy">Privacy Policy</a> |
+          <a href="privacypolicy.html">Privacy Policy</a> |
           As the owner, DH, DivineGames is not affiliated with CrazyGames or other IP in any way.
         </nav>
       </footer>
@@ -376,255 +375,263 @@
     </dialog>
   </div>
 
-  <!-- Your existing JS -->
   <script src="main.js"></script>
 
-  <!-- New UI + particles JS kept inside HTML (so it’s clear/contained) -->
   <script>
-    /* ----------------------------
-      Particles (interactive canvas)
-      ---------------------------- */
-    (function initParticles() {
-      const canvas = document.getElementById('bgParticles');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d', { alpha: true });
+  /* ----------------------------
+     Particles (interactive canvas)
+  ---------------------------- */
+  (function initParticles() {
+    const canvas = document.getElementById('bgParticles');
+    if (!canvas) return;
 
-      let w = 0, h = 0, dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      const mouse = { x: -9999, y: -9999, down: false };
-      const particles = [];
-      const COUNT = 90;      // performance-friendly
-      const LINK_DIST = 140; // line distance
-      const PUSH = 0.9;      // mouse influence
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return; // respect reduced motion
 
-      function resize() {
-        w = canvas.clientWidth = window.innerWidth;
-        h = canvas.clientHeight = window.innerHeight;
-        canvas.width = Math.floor(w * dpr);
-        canvas.height = Math.floor(h * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
+    const ctx = canvas.getContext('2d', { alpha: true });
+    let w = 0, h = 0;
+    let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
-      function rand(min, max){ return Math.random() * (max - min) + min; }
+    const mouse = { x: -9999, y: -9999, down: false };
+    const particles = [];
+    const COUNT = 90;
+    const LINK_DIST = 140;
+    const PUSH = 0.9;
 
-      function seed() {
-        particles.length = 0;
-        for (let i = 0; i < COUNT; i++) {
-          particles.push({
-            x: rand(0, w),
-            y: rand(0, h),
-            vx: rand(-0.35, 0.35),
-            vy: rand(-0.35, 0.35),
-            r: rand(1.1, 2.2),
-            a: rand(0.35, 0.9)
-          });
-        }
-      }
+    function resize() {
+      w = canvas.clientWidth = window.innerWidth;
+      h = canvas.clientHeight = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function rand(min, max){ return Math.random() * (max - min) + min; }
 
-      function draw() {
-        ctx.clearRect(0, 0, w, h);
-
-        // subtle gradient wash (keeps your CSS gradient vibe)
-        const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, Math.max(w, h) * 0.6);
-        g.addColorStop(0, 'rgba(167,139,250,0.10)');
-        g.addColorStop(1, 'rgba(2,6,23,0)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0,0,w,h);
-
-        // update + draw particles
-        for (const p of particles) {
-          // mouse push
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < 140) {
-            const f = (1 - dist / 140) * PUSH * (mouse.down ? 1.8 : 1);
-            p.vx += (dx / (dist || 1)) * f * 0.02;
-            p.vy += (dy / (dist || 1)) * f * 0.02;
-          }
-
-          p.x += p.vx;
-          p.y += p.vy;
-
-          // friction
-          p.vx *= 0.985;
-          p.vy *= 0.985;
-
-          // wrap
-          if (p.x < -20) p.x = w + 20;
-          if (p.x > w + 20) p.x = -20;
-          if (p.y < -20) p.y = h + 20;
-          if (p.y > h + 20) p.y = -20;
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(167,139,250,${p.a})`;
-          ctx.fill();
-        }
-
-        // links
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const a = particles[i], b = particles[j];
-            const dx = a.x - b.x, dy = a.y - b.y;
-            const d = Math.sqrt(dx*dx + dy*dy);
-            if (d < LINK_DIST) {
-              const alpha = (1 - d / LINK_DIST) * 0.22;
-              ctx.strokeStyle = `rgba(167,139,250,${alpha})`;
-              ctx.lineWidth = 1;
-              ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(b.x, b.y);
-              ctx.stroke();
-            }
-          }
-        }
-
-        requestAnimationFrame(draw);
-      }
-
-      window.addEventListener('resize', () => { resize(); seed(); }, { passive: true });
-      window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-      window.addEventListener('mousedown', () => { mouse.down = true; }, { passive: true });
-      window.addEventListener('mouseup', () => { mouse.down = false; }, { passive: true });
-      window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; mouse.down = false; }, { passive: true });
-
-      resize();
-      seed();
-      draw();
-    })();
-
-    /* ----------------------------
-      Slug browser (search + categories)
-      ---------------------------- */
-    (function slugBrowser() {
-      const dlg = document.getElementById('slugDialog');
-      const open1 = document.getElementById('openSlugsBtn');
-      const open2 = document.getElementById('openSlugsBtn2');
-      const close = document.getElementById('closeSlugsBtn');
-      const grid = document.getElementById('slugGrid');
-      const categoryRow = document.getElementById('categoryRow');
-      const search = document.getElementById('slugSearch');
-
-      if (!dlg || !grid || !categoryRow || !search) return;
-
-      // Add as many as you want here (this is the “paste your full list” spot)
-      const GAMES = [
-        { name: "Shell Shockers", slug: "shellshockers-io", cat: ["FPS", "Shooter", ".io"] },
-        { name: "Krunker", slug: "krunker-io", cat: ["FPS", "Shooter", ".io"] },
-        { name: "Crazy Flips 3D", slug: "crazy-flips-3d", cat: ["Casual", "Physics"] },
-        { name: "Ragdoll Archers", slug: "ragdoll-archers", cat: ["Action", "Archery"] },
-        { name: "Moto X3M", slug: "moto-x3m", cat: ["Driving", "Bike"] },
-        { name: "Basketball Stars", slug: "basketball-stars", cat: ["Sports"] },
-        { name: "BloxdHop", slug: "bloxdhop-io", cat: ["Platformer", ".io"] }
-      ];
-
-      const ALL_CATS = Array.from(new Set(GAMES.flatMap(g => g.cat))).sort((a,b)=>a.localeCompare(b));
-      const state = { cat: "All", q: "" };
-
-      function openDialog() {
-        if (typeof dlg.showModal === "function") dlg.showModal();
-        else dlg.setAttribute("open", "open");
-        setTimeout(() => search.focus(), 0);
-        render();
-      }
-      function closeDialog() {
-        dlg.close?.();
-        dlg.removeAttribute("open");
-      }
-
-      function setCat(cat) { state.cat = cat; render(); }
-      function setQuery(q) { state.q = q.trim().toLowerCase(); render(); }
-
-      function matches(game) {
-        const qOk = !state.q || game.name.toLowerCase().includes(state.q) || game.slug.toLowerCase().includes(state.q);
-        const cOk = state.cat === "All" || game.cat.includes(state.cat);
-        return qOk && cOk;
-      }
-
-      function render() {
-        // categories
-        categoryRow.innerHTML = "";
-        const cats = ["All", ...ALL_CATS];
-        for (const c of cats) {
-          const b = document.createElement("button");
-          b.type = "button";
-          b.className = "pill" + (state.cat === c ? " active" : "");
-          b.textContent = c;
-          b.addEventListener("click", () => setCat(c));
-          categoryRow.appendChild(b);
-        }
-
-        // grid
-        grid.innerHTML = "";
-        const list = GAMES.filter(matches);
-        if (!list.length) {
-          const empty = document.createElement("div");
-          empty.className = "game-card";
-          empty.innerHTML = `<p class="title" style="margin:0 0 6px;">No results</p>
-                             <p class="meta" style="margin:0;">Try a different search or category.</p>`;
-          grid.appendChild(empty);
-          return;
-        }
-
-        for (const g of list) {
-          const card = document.createElement("div");
-          card.className = "game-card";
-          card.innerHTML = `
-            <p class="title">${escapeHtml(g.name)}</p>
-            <p class="meta"><code>${escapeHtml(g.slug)}</code> • ${g.cat.map(escapeHtml).join(" • ")}</p>
-            <div class="actions">
-              <button class="mini" type="button" data-slug="${escapeAttr(g.slug)}">Play</button>
-              <button class="mini secondary" type="button" data-copy="${escapeAttr(g.slug)}">Copy slug</button>
-            </div>
-          `;
-          grid.appendChild(card);
-        }
-
-        // bind buttons
-        grid.querySelectorAll('button[data-slug]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const slug = btn.getAttribute('data-slug');
-            const input = document.getElementById("gameSlugInput");
-            if (input) input.value = slug;
-            closeDialog();
-            // Uses your existing main.js function
-            if (typeof window.loadGameFromInput === "function") window.loadGameFromInput();
-          });
-        });
-
-        grid.querySelectorAll('button[data-copy]').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const slug = btn.getAttribute('data-copy');
-            try {
-              await navigator.clipboard.writeText(slug);
-              btn.textContent = "Copied!";
-              setTimeout(() => (btn.textContent = "Copy slug"), 800);
-            } catch {
-              alert("Copy failed. Slug: " + slug);
-            }
-          });
+    function seed() {
+      particles.length = 0;
+      for (let i = 0; i < COUNT; i++) {
+        particles.push({
+          x: rand(0, w),
+          y: rand(0, h),
+          vx: rand(-0.35, 0.35),
+          vy: rand(-0.35, 0.35),
+          r: rand(1.1, 2.2),
+          a: rand(0.35, 0.9)
         });
       }
+    }
 
-      function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, ch => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[ch]));
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+
+      const g = ctx.createRadialGradient(
+        mouse.x, mouse.y, 0,
+        mouse.x, mouse.y, Math.max(w, h) * 0.6
+      );
+      g.addColorStop(0, 'rgba(167,139,250,0.10)');
+      g.addColorStop(1, 'rgba(2,6,23,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,w,h);
+
+      for (const p of particles) {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (dist < 140) {
+          const f = (1 - dist / 140) * PUSH * (mouse.down ? 1.8 : 1);
+          p.vx += (dx / (dist || 1)) * f * 0.02;
+          p.vy += (dy / (dist || 1)) * f * 0.02;
+        }
+
+        p.x += p.vx; p.y += p.vy;
+        p.vx *= 0.985; p.vy *= 0.985;
+
+        if (p.x < -20) p.x = w + 20;
+        if (p.x > w + 20) p.x = -20;
+        if (p.y < -20) p.y = h + 20;
+        if (p.y > h + 20) p.y = -20;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(167,139,250,${p.a})`;
+        ctx.fill();
       }
-      function escapeAttr(s) { return escapeHtml(s); }
 
-      open1?.addEventListener("click", openDialog);
-      open2?.addEventListener("click", openDialog);
-      close?.addEventListener("click", closeDialog);
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i], b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d = Math.sqrt(dx*dx + dy*dy);
+          if (d < LINK_DIST) {
+            const alpha = (1 - d / LINK_DIST) * 0.22;
+            ctx.strokeStyle = `rgba(167,139,250,${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
 
-      dlg.addEventListener("click", (e) => {
-        // click outside to close
-        const rect = dlg.getBoundingClientRect();
-        const inDialog = (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom);
-        if (!inDialog) closeDialog();
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => { resize(); seed(); }, { passive: true });
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    window.addEventListener('mousedown', () => { mouse.down = true; }, { passive: true });
+    window.addEventListener('mouseup', () => { mouse.down = false; }, { passive: true });
+    window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; mouse.down = false; }, { passive: true });
+
+    resize();
+    seed();
+    draw();
+  })();
+
+  /* ----------------------------
+     Slug browser (search + categories)
+  ---------------------------- */
+  (function slugBrowser() {
+    const dlg = document.getElementById('slugDialog');
+    const open1 = document.getElementById('openSlugsBtn');
+    const open2 = document.getElementById('openSlugsBtn2');
+    const close = document.getElementById('closeSlugsBtn');
+    const grid = document.getElementById('slugGrid');
+    const categoryRow = document.getElementById('categoryRow');
+    const search = document.getElementById('slugSearch');
+
+    if (!dlg || !grid || !categoryRow || !search) return;
+
+    const GAMES = [
+      { name: "Shell Shockers", slug: "shellshockers-io", cat: ["FPS", "Shooter", ".io"] },
+      { name: "Krunker", slug: "krunker-io", cat: ["FPS", "Shooter", ".io"] },
+      { name: "Crazy Flips 3D", slug: "crazy-flips-3d", cat: ["Casual", "Physics"] },
+      { name: "Ragdoll Archers", slug: "ragdoll-archers", cat: ["Action", "Archery"] },
+      { name: "Moto X3M", slug: "moto-x3m", cat: ["Driving", "Bike"] },
+      { name: "Basketball Stars", slug: "basketball-stars", cat: ["Sports"] },
+      { name: "BloxdHop", slug: "bloxdhop-io", cat: ["Platformer", ".io"] }
+    ];
+
+    const ALL_CATS = Array.from(new Set(GAMES.flatMap(g => g.cat))).sort((a,b)=>a.localeCompare(b));
+    const state = { cat: "All", q: "" };
+
+    function openDialog() {
+      if (typeof dlg.showModal === "function") dlg.showModal();
+      else dlg.setAttribute("open", "open");
+      state.q = "";
+      search.value = "";
+      setTimeout(() => search.focus(), 0);
+      render();
+    }
+
+    function closeDialog() {
+      if (typeof dlg.close === "function") dlg.close();
+      dlg.removeAttribute("open");
+    }
+
+    function setCat(cat) { state.cat = cat; render(); }
+    function setQuery(q) { state.q = q.trim().toLowerCase(); render(); }
+
+    function matches(game) {
+      const qOk = !state.q || game.name.toLowerCase().includes(state.q) || game.slug.toLowerCase().includes(state.q);
+      const cOk = state.cat === "All" || game.cat.includes(state.cat);
+      return qOk && cOk;
+    }
+
+    function render() {
+      categoryRow.innerHTML = "";
+      const cats = ["All", ...ALL_CATS];
+
+      for (const c of cats) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "pill" + (state.cat === c ? " active" : "");
+        b.textContent = c;
+        b.addEventListener("click", () => setCat(c));
+        categoryRow.appendChild(b);
+      }
+
+      grid.innerHTML = "";
+      const list = GAMES.filter(matches);
+
+      if (!list.length) {
+        const empty = document.createElement("div");
+        empty.className = "game-card";
+        empty.innerHTML = `<p class="title" style="margin:0 0 6px;">No results</p>
+          <p class="meta" style="margin:0;">Try a different search or category.</p>`;
+        grid.appendChild(empty);
+        return;
+      }
+
+      for (const g of list) {
+        const card = document.createElement("div");
+        card.className = "game-card";
+        card.innerHTML = `
+          <p class="title">${escapeHtml(g.name)}</p>
+          <p class="meta"><code>${escapeHtml(g.slug)}</code> • ${g.cat.map(escapeHtml).join(" • ")}</p>
+          <div class="actions">
+            <button class="mini" type="button" data-slug="${escapeAttr(g.slug)}">Play</button>
+            <button class="mini secondary" type="button" data-copy="${escapeAttr(g.slug)}">Copy slug</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+
+      grid.querySelectorAll('button[data-slug]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const slug = btn.getAttribute('data-slug');
+          const input = document.getElementById("gameSlugInput");
+          if (input) input.value = slug;
+          closeDialog();
+          if (typeof window.loadGameFromInput === "function") window.loadGameFromInput();
+        });
       });
 
-      search.addEventListener("input", () => setQuery(search.value));
-    })();
+      grid.querySelectorAll('button[data-copy]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const slug = btn.getAttribute('data-copy');
+          try {
+            await navigator.clipboard.writeText(slug);
+            const old = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => (btn.textContent = old), 800);
+          } catch {
+            alert("Copy failed. Slug: " + slug);
+          }
+        });
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, ch => ({
+        "&": "&",
+        "<": "<",
+        ">": ">",
+        '"': """,
+        "'": "&#39;"
+      }[ch]));
+    }
+    function escapeAttr(s) { return escapeHtml(s); }
+
+    open1 && open1.addEventListener("click", openDialog);
+    open2 && open2.addEventListener("click", openDialog);
+    close && close.addEventListener("click", closeDialog);
+
+    dlg.addEventListener("click", (e) => {
+      const rect = dlg.getBoundingClientRect();
+      const inDialog =
+        e.clientX >= rect.left && e.clientX <= rect.right &&
+        e.clientY >= rect.top && e.clientY <= rect.bottom;
+      if (!inDialog) closeDialog();
+    });
+
+    dlg.addEventListener("cancel", (e) => {
+      // allow ESC to close normally
+    });
+
+    search.addEventListener("input", () => setQuery(search.value));
+  })();
   </script>
 </body>
 </html>
-
