@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>DivineGames — About</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <meta name="theme-color" content="#5335CC" />
+
+  <!-- Basic SEO -->
+  <meta name="description" content="About DivineGames: what it is, how it works, and important notes." />
+  <meta name="keywords" content="DivineGames, games, crazygames, launcher, about" />
+  <meta name="author" content="DivineGames" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="DivineGames — About" />
+  <meta property="og:description" content="Learn more about DivineGames: what it is, how it works, and important notes." />
+  <meta property="og:image" content="assets/thumbnail.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="about.html" />
+  <meta property="og:site_name" content="DivineGames" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DivineGames — About" />
+  <meta name="twitter:description" content="Learn more about DivineGames: what it is, how it works, and important notes." />
+  <meta name="twitter:image" content="assets/thumbnail.png" />
+
+  <!-- Keep your existing styling/animations -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Small page-specific helpers (keeps the same vibe without touching your other files) -->
+  <style>
+    /* Optional: subtle entrance animation for this page content */
+    .page-enter {
+      animation: dgFadeUp 520ms ease both;
+    }
+    @keyframes dgFadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* If your upgraded design uses a background canvas/particles, this supports it */
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    /* Ensure content sits above background canvas */
+    .page-shell {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Minimal nav styling fallback (in case style.css doesn’t include it yet) */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand img { width: 34px; height: 34px; }
+    .brand span {
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: #fff;
+    }
+    .navlinks {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .navlinks a {
+      text-decoration: none;
+      border: 1px solid rgba(167, 139, 250, 0.18);
+      background: rgba(15, 23, 42, 0.35);
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .navlinks a[aria-current="page"] {
+      border-color: rgba(167, 139, 250, 0.55);
+      background: rgba(83, 53, 204, 0.22);
+    }
+
+    /* Keep main aligned like your other pages */
+    main { position: relative; }
+  </style>
+</head>
+
+<body>
+  <!-- Particle/animated background canvas (non-interactive by default) -->
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+  <div class="page-shell">
+    <!-- Top menu (same links across pages) -->
+    <header class="topbar" role="banner">
+      <a class="brand" href="index.html" aria-label="Go to DivineGames Home">
+        <img src="assets/logo.png" alt="DivineGames logo" />
+        <span>DivineGames</span>
+      </a>
+
+      <nav class="navlinks" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#play">Play</a>
+        <a href="index.html#slugs">Game Slugs</a>
+        <a href="about.html" aria-current="page">About</a>
+        <a href="/privacypolicy">Privacy</a>
+      </nav>
+    </header>
+
+    <!-- IMPORTANT: Your main.js auto-runs loadGame() and expects these IDs.
+         We include them (hidden) so about.html doesn’t error. -->
+    <div class="loader" id="loader" aria-label="Loading..." style="display:none;">Loading…</div>
+    <main class="loader" id="gameInput" style="display:none;"></main>
+
+    <!-- Actual About content -->
+    <main class="loader page-enter" aria-label="About DivineGames" style="min-height:auto; padding-top: 10px;">
+      <div class="hero-section">
+        <img src="assets/logo.png" alt="DivineGames logo" style="width:60px; display:block; margin: 0 auto 0.5em auto;" />
+        <h1>About <b>DivineGames</b></h1>
+        <h2 id="tagline">What this project is, how it works, and the important stuff.</h2>
+      </div>
+
+      <section aria-label="What is DivineGames">
+        <h3>What is DivineGames?</h3>
+        <p>
+          DivineGames is a simple web launcher interface that helps you load a game by selecting or entering a
+          <code>game slug</code> (the part of the game URL that identifies the game).
+        </p>
+        <p>
+          The goal is a clean, fast UI: search, categories, and a straightforward “type slug → play” workflow.
+        </p>
+      </section>
+
+      <section aria-label="How it works">
+        <h3>How does it work?</h3>
+        <p>
+          DivineGames reads the <code>?game=</code> parameter in the URL (for example: <code>?game=crazy-flips-3d</code>)
+          and then loads the game using your existing JavaScript logic.
+        </p>
+        <p>
+          If you don’t provide a slug, it stays in “launcher mode” where you can browse/search slugs and start a game.
+        </p>
+      </section>
+
+      <section aria-label="Disclaimers">
+        <h3>Disclaimer</h3>
+        <p>
+          DivineGames is not affiliated with CrazyGames (or any other game publisher). All game names, logos, and
+          trademarks are the property of their respective owners.
+        </p>
+      </section>
+
+      <section aria-label="Project and licensing">
+        <h3>Project & License</h3>
+        <p>
+          If your repository uses the Apache License 2.0, keep the license text in your project (for example,
+          in a <code>LICENSE</code> file) and include any required notices/attributions.
+        </p>
+        <p>
+          You can also add a <code>NOTICE</code> file if you’re required to preserve attribution notices from upstream.
+        </p>
+      </section>
+
+      <footer>
+        <p>
+          <i>DivineGames</i> — built for a clean, modern launcher experience.
+        </p>
+        <nav aria-label="Footer links">
+          <a href="index.html">Home</a> | <a href="/privacypolicy">Privacy Policy</a>
+        </nav>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Your existing JS (kept as-is). Including it for consistent animations/behavior.
+       The hidden #loader/#gameInput above prevents errors when it runs. -->
+  <script src="main.js"></script>
+
+  <!-- Lightweight particle background (kept inside this file as requested).
+       If you already have particles elsewhere, remove this block. -->
+  <script>
+    (function () {
+      const c = document.getElementById('bgCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+
+      let w, h, dpr;
+      function resize() {
+        dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        w = window.innerWidth;
+        h = window.innerHeight;
+        c.width = Math.floor(w * dpr);
+        c.height = Math.floor(h * dpr);
+        c.style.width = w + 'px';
+        c.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      window.addEventListener('resize', resize, { passive: true });
+      resize();
+
+      const N = Math.floor(Math.min(140, Math.max(60, (w * h) / 18000)));
+      const pts = Array.from({ length: N }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 1.6 + 0.6
+      }));
+
+      const mouse = { x: w / 2, y: h / 2, active: false };
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        mouse.active = true;
+      }, { passive: true });
+      window.addEventListener('mouseleave', () => mouse.active = false, { passive: true });
+
+      function step() {
+        ctx.clearRect(0, 0, w, h);
+
+        // Background glow wash
+        const g = ctx.createRadialGradient(mouse.x, mouse.y, 50, mouse.x, mouse.y, 520);
+        g.addColorStop(0, 'rgba(83, 53, 204, 0.16)');
+        g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+
+        // Particles + lines
+        for (let i = 0; i < pts.length; i++) {
+          const p = pts[i];
+
+          // Mouse attraction (very subtle)
+          if (mouse.active) {
+            const dx = mouse.x - p.x;
+            const dy = mouse.y - p.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const pull = Math.max(0, 1 - dist / 220) * 0.035;
+            p.vx += (dx / dist) * pull;
+            p.vy += (dy / dist) * pull;
+          }
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Wrap
+          if (p.x < -20) p.x = w + 20;
+          if (p.x > w + 20) p.x = -20;
+          if (p.y < -20) p.y = h + 20;
+          if (p.y > h + 20) p.y = -20;
+
+          // Draw dot
+          ctx.beginPath();
+          ctx.fillStyle = 'rgba(167, 139, 250, 0.75)';
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Connections
+          for (let j = i + 1; j < pts.length; j++) {
+            const q = pts[j];
+            const dx = q.x - p.x;
+            const dy = q.y - p.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 130) {
+              const a = (1 - dist / 130) * 0.22;
+              ctx.strokeStyle = `rgba(83, 53, 204, ${a})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    })();
+  </script>
+</body>
+</html>
