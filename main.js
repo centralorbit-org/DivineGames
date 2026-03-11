@@ -1,4 +1,34 @@
-const adBlockList = [
+/* =========================================================
+   DivineGames — main.js (LOCKED)
+   - Loads CrazyGames by slug (?game=...)
+   - Manual slug input + keyboard shortcuts
+   - “Best-effort” ad/annoyance suppression (page-level)
+   ========================================================= */
+
+/* -----------------------------
+   CONFIG (edit if needed)
+----------------------------- */
+// Your site origin (used for bookmarklet messaging / safety checks if you add any later)
+const SITE_ORIGIN = `${location.protocol}//${location.host}`;
+
+// Where CrazyGames game indexes live
+const CRAZYGAMES_GAME_INDEX = (slug) =>
+  `https://games.crazygames.com/en_US/${encodeURIComponent(slug)}/index.html`;
+
+// CrazyGames SDK (gameframe loader)
+const CRAZYGAMES_SDK_URL = "https://builds.crazygames.com/gameframe/v1/bundle.js";
+
+/* -----------------------------
+   DivineGames: “best-effort” ad/annoyance suppression
+   Notes:
+   - This can only intercept requests that go through THIS page's fetch/XHR.
+   - It cannot reliably block ads inside cross-origin iframes.
+----------------------------- */
+(function divineAdBlocker() {
+  if (typeof window === "undefined") return;
+
+  // Keep this list as hostnames (no protocol, no paths).
+  const adBlockList = [
     "doubleclick.net",
     "adservice.google.com",
     "googlesyndication.com",
@@ -9,616 +39,416 @@ const adBlockList = [
     "adnxs.com",
     "googletagmanager.com",
     "imasdk.googleapis.com",
-];
+    "google-analytics.com",
+    "analytics.google.com",
+    "stats.g.doubleclick.net",
+  ];
 
-// --- Constants for UI Modification & Polling ---
-const BUTTON_TO_MODIFY_TEXT_SELECTOR = ".MuiButtonBase-root.css-1fs4034";
-const BUTTON_NEW_TEXT = "Continue (CLICK HERE)";
+  // Extra keywords that sometimes appear in element IDs/classes.
+  const commonAdKeywords = [
+    "ad",
+    "ads",
+    "adbox",
+    "adunit",
+    "advert",
+    "advertisement",
+    "banner",
+    "sponsor",
+    "sponsored",
+    "promo",
+    "promoted",
+    "preroll",
+    "outbrain",
+    "taboola",
+  ];
 
-const DIV_ONE_SELECTOR = ".css-1bkw7cw"; // For "Start Playing"
-const DIV_ONE_NEW_TEXT = "Start Playing";
-
-const DIV_TWO_SELECTOR = ".css-1uzrx98"; // For "Sorry about this popup..."
-const DIV_TWO_NEW_TEXT =
-    "Sorry about this popup, just ignore it and click continue!";
-
-const MUI_BUTTON_TO_REMOVE_SELECTOR = ".MuiButtonBase-root.css-b48h4t";
-
-let uiModificationPollingInterval = null;
-let uiModificationPollingTimeout = null;
-const UI_POLL_DURATION_MS = 60 * 1000; // 1 minute
-const UI_POLL_INTERVAL_MS = 300; // Check every 300ms
-
-// Flags to track if modifications are done (for polling)
-let buttonTextModified = false;
-let divOneTextModified = false;
-let divTwoTextModified = false;
-
-(function blockAds() {
-    if (typeof window === "undefined") return; // Guard for non-browser environments
-
-    let originalFetch = window.fetch;
-    window.fetch = async function (...args) {
-        try {
-            if (
-                args[0] &&
-                typeof args[0] === "string" &&
-                adBlockList.some((domain) => args[0].includes(domain))
-            ) {
-                console.warn(
-                    "SaneGames: Intercepted ad request (fetch):",
-                    args[0]
-                );
-                return new Response("{}", {
-                    status: 200,
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-            }
-        } catch (e) {
-            console.error("SaneGames: Error in fetch override", e);
-        }
-        return originalFetch.apply(this, args);
-    };
-
-    if (typeof XMLHttpRequest !== "undefined") {
-        let originalOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function (method, url) {
-            try {
-                if (
-                    url &&
-                    typeof url === "string" &&
-                    adBlockList.some((domain) => url.includes(domain))
-                ) {
-                    console.warn(
-                        "SaneGames: Intercepted ad request (XHR):",
-                        url
-                    );
-                    // Effectively neuter the request
-                    this.send = () => {
-                        console.log("SaneGames: Blocked XHR send to " + url);
-                    };
-                    Object.defineProperty(this, "readyState", {
-                        value: 4,
-                        writable: false,
-                    });
-                    Object.defineProperty(this, "status", {
-                        value: 200,
-                        writable: false,
-                    });
-                    Object.defineProperty(this, "responseText", {
-                        value: "{}",
-                        writable: false,
-                    });
-                    Object.defineProperty(this, "response", {
-                        value: {},
-                        writable: false,
-                    });
-                    if (this.onload) {
-                        try {
-                            this.onload();
-                        } catch (e) {}
-                    }
-                    if (this.onreadystatechange) {
-                        try {
-                            this.onreadystatechange();
-                        } catch (e) {}
-                    }
-                    return; // End here, don't call originalOpen
-                }
-            } catch (e) {
-                console.error("SaneGames: Error in XHR.open override", e);
-            }
-            return originalOpen.apply(this, arguments);
-        };
+  function toURL(input) {
+    try {
+      return new URL(String(input), window.location.href);
+    } catch {
+      return null;
     }
+  }
+
+  function hostMatchesBlocklist(hostname) {
+    if (!hostname) return false;
+    const h = hostname.toLowerCase();
+    return adBlockList.some((d) => h === d || h.endsWith("." + d));
+  }
+
+  function urlLooksBlocked(urlLike) {
+    const u = toURL(urlLike);
+    if (!u) return false;
+    return hostMatchesBlocklist(u.hostname);
+  }
+
+  function safeNoopResponse() {
+    // Most ad endpoints accept empty-ish JSON without breaking the page.
+    return new Response("{}", {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // --- Intercept fetch (best effort) ---
+  const originalFetch = window.fetch?.bind(window);
+  if (originalFetch) {
+    window.fetch = async function (...args) {
+      try {
+        const req = args[0];
+        const urlLike = typeof req === "string" ? req : req?.url;
+        if (urlLike && urlLooksBlocked(urlLike)) {
+          console.warn("DivineGames: blocked fetch ->", urlLike);
+          return safeNoopResponse();
+        }
+      } catch (e) {
+        console.warn("DivineGames: fetch interceptor error:", e);
+      }
+      return originalFetch(...args);
+    };
+  }
+
+  // --- Intercept XHR (best effort) ---
+  if (typeof XMLHttpRequest !== "undefined") {
+    const originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+      try {
+        if (url && urlLooksBlocked(url)) {
+          console.warn("DivineGames: blocked XHR ->", url);
+
+          // Neuter send()
+          this.send = function () {
+            console.warn("DivineGames: XHR send blocked ->", url);
+          };
+
+          // Try to look “completed” to naive consumers
+          try {
+            Object.defineProperty(this, "readyState", { value: 4 });
+            Object.defineProperty(this, "status", { value: 200 });
+            Object.defineProperty(this, "responseText", { value: "{}" });
+            Object.defineProperty(this, "response", { value: {} });
+          } catch {
+            // Some browsers disallow redefining these; ignore.
+          }
+
+          // Fire callbacks if present
+          try {
+            if (typeof this.onreadystatechange === "function") this.onreadystatechange();
+            if (typeof this.onload === "function") this.onload();
+          } catch {
+            // ignore
+          }
+          return;
+        }
+      } catch (e) {
+        console.warn("DivineGames: XHR interceptor error:", e);
+      }
+      return originalOpen.call(this, method, url, ...rest);
+    };
+  }
+
+  // --- DOM cleanup (best effort) ---
+  // IMPORTANT: Keep this conservative so it doesn't break the actual game container.
+  function elementLooksLikeAd(el) {
+    if (!el || !(el instanceof Element)) return false;
+
+    const id = (el.id || "").toLowerCase();
+    const cls = (typeof el.className === "string" ? el.className : "").toLowerCase();
+
+    // If it links/loads blocked hosts, it’s probably ad-related
+    const src = el.getAttribute?.("src") || el.getAttribute?.("href") || el.getAttribute?.("data-src");
+    if (src && urlLooksBlocked(src)) return true;
+
+    // Keyword heuristics for id/class
+    for (const k of commonAdKeywords) {
+      if (id.includes(k) || cls.includes(k)) return true;
+    }
+    return false;
+  }
+
+  function sweepAdsOnce() {
+    try {
+      const candidates = document.querySelectorAll(
+        "iframe, ins, script, img, video, div, section, aside, a, button"
+      );
+
+      candidates.forEach((el) => {
+        // Avoid touching the launcher UI itself
+        if (el.closest?.("#appShell, #gameInput, #loader, dialog#slugDialog, header.topbar")) return;
+
+        // Avoid removing the SDK script we inject
+        if (el.tagName === "SCRIPT" && el.getAttribute("src") === CRAZYGAMES_SDK_URL) return;
+
+        if (elementLooksLikeAd(el) && el.parentNode) {
+          console.warn("DivineGames: removed likely ad element:", el.tagName, el.id, el.className);
+          el.remove();
+        }
+      });
+    } catch (e) {
+      console.warn("DivineGames: sweep error:", e);
+    }
+  }
+
+  // Run a few times early, then stop (prevents constant fighting with the game)
+  let sweeps = 0;
+  const maxSweeps = 12;
+  const sweepInterval = setInterval(() => {
+    sweeps += 1;
+    sweepAdsOnce();
+    if (sweeps >= maxSweeps) clearInterval(sweepInterval);
+  }, 500);
+
+  // Light MutationObserver for late popups (still limited)
+  if (typeof MutationObserver !== "undefined") {
+    const obs = new MutationObserver(() => sweepAdsOnce());
+    const start = () => {
+      if (!document.body) return;
+      obs.observe(document.body, { childList: true, subtree: true });
+      // Auto-stop after 60s
+      setTimeout(() => obs.disconnect(), 60_000);
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", start, { once: true });
+    } else {
+      start();
+    }
+  }
 })();
 
-function applyUiModifications() {
-    if (typeof document === "undefined") return;
-
-    // --- 1. Modify Text Content of Target Elements ---
-    if (!buttonTextModified) {
-        const buttonNode = document.querySelector(
-            BUTTON_TO_MODIFY_TEXT_SELECTOR
-        );
-        if (buttonNode instanceof HTMLElement) {
-            let textContainer = buttonNode.querySelector(
-                ".MuiButton-label, .MuiButton-label-root, span"
-            );
-            let currentText = textContainer
-                ? textContainer.textContent
-                : buttonNode.textContent;
-            if (currentText !== BUTTON_NEW_TEXT) {
-                if (textContainer) textContainer.textContent = BUTTON_NEW_TEXT;
-                else buttonNode.textContent = BUTTON_NEW_TEXT;
-                console.log(
-                    `SaneGames: Changed text of button matching "${BUTTON_TO_MODIFY_TEXT_SELECTOR}"`
-                );
-            }
-            buttonTextModified = true;
-        }
-    }
-
-    if (!divOneTextModified) {
-        const divOneNode = document.querySelector(DIV_ONE_SELECTOR);
-        if (divOneNode instanceof HTMLElement) {
-            if (divOneNode.textContent !== DIV_ONE_NEW_TEXT) {
-                divOneNode.textContent = DIV_ONE_NEW_TEXT;
-                console.log(
-                    `SaneGames: Changed text of div matching "${DIV_ONE_SELECTOR}"`
-                );
-            }
-            divOneTextModified = true;
-        }
-    }
-
-    if (!divTwoTextModified) {
-        const divTwoNode = document.querySelector(DIV_TWO_SELECTOR);
-        if (divTwoNode instanceof HTMLElement) {
-            if (divTwoNode.textContent !== DIV_TWO_NEW_TEXT) {
-                divTwoNode.textContent = DIV_TWO_NEW_TEXT;
-                console.log(
-                    `SaneGames: Changed text of div matching "${DIV_TWO_SELECTOR}"`
-                );
-            }
-            divTwoTextModified = true;
-        }
-    }
-
-    // --- 2. Element Removals ---
-    const selectorsToRemove = [
-        MUI_BUTTON_TO_REMOVE_SELECTOR,
-        "#crazygames-ad",
-        ".ad-container",
-    ];
-
-    selectorsToRemove.forEach((selector) => {
-        document.querySelectorAll(selector).forEach((el) => {
-            if (el.parentNode) {
-                console.warn(
-                    `SaneGames: Removed element matching selector "${selector}":`,
-                    el.tagName,
-                    el.id,
-                    el.className
-                );
-                el.remove();
-            }
-        });
-    });
-
-    // --- 3. Broader ad-blocking/element removal logic ---
-    document
-        .querySelectorAll(
-            "iframe, script, div, img, ins, video, style, button, a"
-        )
-        .forEach((el) => {
-            if (
-                el.matches &&
-                (el.matches(BUTTON_TO_MODIFY_TEXT_SELECTOR) ||
-                    el.matches(DIV_ONE_SELECTOR) ||
-                    el.matches(DIV_TWO_SELECTOR) ||
-                    el.matches(MUI_BUTTON_TO_REMOVE_SELECTOR))
-            ) {
-                return;
-            }
-
-            const elSrc = el.src || el.href || el.data || el.poster;
-            const elId = el.id || "";
-            const elClass =
-                el.className ||
-                (el.classList ? Array.from(el.classList).join(" ") : "");
-            let isPotentialAdOrAnnoyance = false;
-
-            if (
-                elSrc &&
-                typeof elSrc === "string" &&
-                adBlockList.some((domain) => elSrc.includes(domain))
-            ) {
-                isPotentialAdOrAnnoyance = true;
-            } else if (
-                adBlockList.some((keyword) => {
-                    const simpleKeyword = keyword.split(".")[0];
-                    return (
-                        (typeof elId === "string" &&
-                            elId.toLowerCase().includes(simpleKeyword)) ||
-                        (typeof elClass === "string" &&
-                            elClass.toLowerCase().includes(simpleKeyword))
-                    );
-                })
-            ) {
-                isPotentialAdOrAnnoyance = true;
-            } else {
-                const commonAdKeywords = [
-                    "adbox",
-                    "advert",
-                    "google_ads",
-                    "banner_ad",
-                    "promo",
-                    "sponsor",
-                ];
-                if (
-                    commonAdKeywords.some(
-                        (keyword) =>
-                            (typeof elId === "string" &&
-                                elId.toLowerCase().includes(keyword)) ||
-                            (typeof elClass === "string" &&
-                                elClass.toLowerCase().includes(keyword))
-                    )
-                ) {
-                    isPotentialAdOrAnnoyance = true;
-                }
-            }
-
-            if (isPotentialAdOrAnnoyance && el.parentNode) {
-                console.warn(
-                    "SaneGames: Removed potential ad/annoying element (generic):",
-                    el.tagName,
-                    el.id,
-                    el.className,
-                    elSrc
-                );
-                el.remove();
-            }
-        });
-
-    if (
-        buttonTextModified &&
-        divOneTextModified &&
-        divTwoTextModified &&
-        uiModificationPollingInterval
-    ) {
-        console.log(
-            "SaneGames: All target UI elements appear modified. Stopping poll from applyUiModifications."
-        );
-        stopPollingForUiModifications();
-    }
+/* -----------------------------
+   Helpers
+----------------------------- */
+function $(id) {
+  return document.getElementById(id);
 }
 
-function startPollingForUiModifications() {
-    if (uiModificationPollingInterval) return;
-
-    buttonTextModified = false;
-    divOneTextModified = false;
-    divTwoTextModified = false;
-
-    console.log("SaneGames: Starting to poll for UI modifications.");
-    if (uiModificationPollingTimeout)
-        clearTimeout(uiModificationPollingTimeout);
-
-    uiModificationPollingInterval = setInterval(() => {
-        applyUiModifications();
-    }, UI_POLL_INTERVAL_MS);
-
-    uiModificationPollingTimeout = setTimeout(() => {
-        if (uiModificationPollingInterval) {
-            console.log(
-                "SaneGames: UI modification polling duration exceeded. Stopping poll."
-            );
-            stopPollingForUiModifications();
-        }
-    }, UI_POLL_DURATION_MS);
+function setLoaderVisible(visible, text) {
+  const loader = $("loader");
+  if (!loader) return;
+  loader.style.display = visible ? "flex" : "none";
+  if (typeof text === "string") loader.textContent = text;
 }
 
-function stopPollingForUiModifications() {
-    if (uiModificationPollingInterval) {
-        clearInterval(uiModificationPollingInterval);
-        uiModificationPollingInterval = null;
-        console.log("SaneGames: Polling for UI modifications stopped.");
-    }
-    if (uiModificationPollingTimeout) {
-        clearTimeout(uiModificationPollingTimeout);
-        uiModificationPollingTimeout = null;
-    }
+function setInputVisible(visible) {
+  const gameInput = $("gameInput");
+  if (!gameInput) return;
+  if (visible) gameInput.classList.add("active");
+  else gameInput.classList.remove("active");
 }
 
-if (typeof window !== "undefined" && typeof MutationObserver !== "undefined") {
-    const observer = new MutationObserver((mutations) => {
-        applyUiModifications();
-    });
-
-    const startObserver = () => {
-        if (document.body) {
-            applyUiModifications(); // Initial run
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true,
-            });
-        } else {
-            document.addEventListener("DOMContentLoaded", () => {
-                applyUiModifications(); // Initial run
-                observer.observe(document.body, {
-                    childList: true,
-                    subtree: true,
-                });
-            });
-        }
-    };
-    startObserver();
+function getSlugFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("game");
+  return slug ? slug.trim() : "";
 }
 
-async function fetchWithTimeout(url, timeout = 5000) {
-    return Promise.race([
-        fetch(url),
-        new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Timeout")), timeout)
-        ),
-    ]);
+function setSlugInURL(slug) {
+  const u = new URL(window.location.href);
+  u.search = `?game=${encodeURIComponent(slug)}`;
+  window.location.href = u.toString();
 }
 
+async function fetchWithTimeout(url, timeoutMs = 8000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: ctrl.signal, credentials: "omit" });
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+/* -----------------------------
+   Game config fetching
+   (Attempts to pull "var options = {...};" from game index via CORS proxies)
+----------------------------- */
 async function fetchGameConfig(gameSlug) {
-    const urls = [
-        `https://opencors.netlify.app/.netlify/functions/main?url=${encodeURIComponent(
-            `https://games.crazygames.com/en_US/${gameSlug}/index.html`
-        )}`,
-        `https://corsproxy.io/?key=d6168cb0&url=${encodeURIComponent(
-            `https://games.crazygames.com/en_US/${gameSlug}/index.html`
-        )}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(
-            `https://games.crazygames.com/en_US/${gameSlug}/index.html`
-        )}`,
-    ];
+  const target = CRAZYGAMES_GAME_INDEX(gameSlug);
 
-    for (let i = 0; i < urls.length; i++) {
-        try {
-            console.log(
-                `SaneGames: Attempting to fetch config via proxy ${i + 1}: ${
-                    urls[i].split("?")[0]
-                }`
-            );
-            let response = await fetchWithTimeout(urls[i]);
-            if (!response.ok) {
-                throw new Error(
-                    `Proxy ${i + 1} request failed with status ${
-                        response.status
-                    }`
-                );
-            }
-            let text = await response.text();
-            let match = text.match(/var options = (\{[\s\S]*?\});/);
-            if (match && match[1]) {
-                console.log(
-                    `SaneGames: Successfully fetched config via proxy ${i + 1}`
-                );
-                return JSON.parse(match[1]);
-            } else {
-                console.warn(
-                    `SaneGames: Proxy ${
-                        i + 1
-                    } returned content, but no options found.`
-                );
-            }
-        } catch (error) {
-            console.warn(
-                `SaneGames: Fetching config with proxy ${i + 1} failed:`,
-                error.message
-            );
-        }
+  const proxies = [
+    // 1) opencors (example)
+    `https://opencors.netlify.app/.netlify/functions/main?url=${encodeURIComponent(target)}`,
+    // 2) corsproxy.io (requires key in some cases; keep if you have one)
+    `https://corsproxy.io/?url=${encodeURIComponent(target)}`,
+    // 3) allorigins raw
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`,
+  ];
+
+  for (let i = 0; i < proxies.length; i++) {
+    const url = proxies[i];
+    try {
+      console.log(`DivineGames: fetching config via proxy ${i + 1}:`, url.split("?")[0]);
+      const res = await fetchWithTimeout(url, 10000);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const text = await res.text();
+
+      // Typical pattern in CrazyGames index.html
+      const match = text.match(/var\s+options\s*=\s*(\{[\s\S]*?\});/);
+      if (!match || !match[1]) throw new Error("Options not found");
+
+      const options = JSON.parse(match[1]);
+      return options;
+    } catch (e) {
+      console.warn(`DivineGames: proxy ${i + 1} failed:`, e?.message || e);
     }
-    console.error("SaneGames: All proxy attempts to fetch game config failed.");
-    return null;
+  }
+
+  return null;
 }
 
+/* -----------------------------
+   SDK loading
+----------------------------- */
+function loadSdkScript() {
+  return new Promise((resolve, reject) => {
+    // Already loaded?
+    if (window.Crazygames && typeof window.Crazygames.load === "function") return resolve();
+
+    // Already injected?
+    const existing = document.querySelector(`script[src="${CRAZYGAMES_SDK_URL}"]`);
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("SDK script failed")), { once: true });
+      return;
+    }
+
+    const s = document.createElement("script");
+    s.src = CRAZYGAMES_SDK_URL;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("SDK script failed"));
+    document.head.appendChild(s);
+  });
+}
+
+/* -----------------------------
+   Main load flow
+----------------------------- */
 async function loadGame() {
-    if (typeof window === "undefined" || typeof document === "undefined")
-        return;
+  if (typeof window === "undefined" || typeof document === "undefined") return;
 
-    let params = new URLSearchParams(window.location.search);
-    let gameSlug = params.get("game");
-    let loader = document.getElementById("loader");
-    let gameInput = document.getElementById("gameInput");
+  const slug = getSlugFromURL();
+  if (!slug) {
+    setLoaderVisible(false);
+    setInputVisible(true);
+    return;
+  }
 
-    if (!gameSlug) {
-        if (loader) loader.style.display = "none";
-        if (gameInput) gameInput.classList.add("active");
-        stopPollingForUiModifications(); // Stop polling if no game to load
-        return;
+  setInputVisible(false);
+  setLoaderVisible(true, "Loading…");
+
+  const options = await fetchGameConfig(slug);
+  if (!options) {
+    setLoaderVisible(
+      true,
+      "Loading failed: could not fetch the game configuration. Check the slug, or try again later (proxy services may be down)."
+    );
+    setInputVisible(true);
+    return;
+  }
+
+  // Optional analytics
+  try {
+    if (window.posthog && typeof window.posthog.capture === "function") {
+      window.posthog.capture("game selected", {
+        gameslug: slug,
+        gamename: options.gameName || "",
+      });
     }
+  } catch {
+    // ignore
+  }
 
-    if (loader) loader.style.display = "flex";
-    if (gameInput) {
-        gameInput.classList.remove("active");
-        gameInput.style.display = "none";
-    }
+  document.title = `${options.gameName || slug} | DivineGames`;
 
-    let options = await fetchGameConfig(gameSlug);
-    if (!options) {
-        if (loader) {
-            loader.textContent =
-                "Loading failed. Could not fetch game configuration. The game slug might be incorrect, the game might not exist, or all our proxy services are down. Please try again later or check the slug.";
-            loader.style.display = "flex";
-        }
-        if (gameInput) {
-            gameInput.classList.add("active");
-            gameInput.style.display = "flex";
-        }
-        stopPollingForUiModifications(); // Stop polling if config fails
-        return;
-    }
+  try {
+    await loadSdkScript();
+  } catch (e) {
+    console.error("DivineGames: SDK failed:", e);
+    setLoaderVisible(
+      true,
+      "Failed to load the CrazyGames SDK script. Check your connection (or a network filter may be blocking it) and try again."
+    );
+    setInputVisible(true);
+    return;
+  }
+
+  if (!window.Crazygames || typeof window.Crazygames.load !== "function") {
+    setLoaderVisible(true, "CrazyGames SDK loaded incorrectly. Please refresh and try again.");
+    setInputVisible(true);
+    return;
+  }
+
+  try {
+    await window.Crazygames.load(options);
+    // Game is now running; remove launcher UI to avoid overlays.
+    const loader = $("loader");
+    const gameInput = $("gameInput");
+    if (loader) loader.remove();
+    if (gameInput) gameInput.remove();
+  } catch (error) {
+    console.error("DivineGames: Crazygames.load() failed:", error);
+
+    let msg = `Failed to load "${options.gameName || slug}". `;
+    const em = (error && error.message) ? String(error.message) : "";
 
     if (
-        typeof posthog !== "undefined" &&
-        typeof posthog.capture === "function"
+      em.toLowerCase().includes("x-frame-options") ||
+      em.toLowerCase().includes("refused to display") ||
+      em.toLowerCase().includes("sameorigin") ||
+      em.toLowerCase().includes("frame-ancestors") ||
+      em.toLowerCase().includes("content-security-policy")
     ) {
-        posthog.capture("game selected", {
-            gameslug: gameSlug,
-            gamename: options.gameName,
-        });
-    } else {
-        console.log("posthog failed");
+      msg += "This game likely blocks embedding via security headers (CSP/X-Frame-Options). ";
+    } else if (em) {
+      msg += `Error: ${em}. `;
     }
 
-    document.title = (options.gameName || gameSlug) + " | SaneGames";
-
-    let sdkScriptUrl = "https://builds.crazygames.com/gameframe/v1/bundle.js";
-    let script = document.createElement("script");
-    script.src = sdkScriptUrl;
-
-    script.onerror = () => {
-        console.error(
-            "SaneGames: Crazygames SDK script failed to load from:",
-            sdkScriptUrl
-        );
-        if (loader) {
-            loader.textContent =
-                "Failed to load the CrazyGames SDK script. Please check your internet connection or an adblocker might be blocking the SDK URL. Try again later.";
-            loader.style.display = "flex";
-        }
-        if (gameInput) {
-            gameInput.classList.add("active");
-            gameInput.style.display = "flex";
-        }
-        stopPollingForUiModifications(); // Stop polling if SDK script fails
-    };
-
-    script.onload = () => {
-        if (window.Crazygames && typeof window.Crazygames.load === "function") {
-            console.log(
-                "SaneGames: CrazyGames SDK loaded. Attempting to load game:",
-                options.gameName || gameSlug
-            );
-            Crazygames.load(options)
-                .then(() => {
-                    console.log(
-                        "SaneGames: Game loaded successfully:",
-                        options.gameName || gameSlug
-                    );
-                    if (loader) loader.remove();
-                    if (gameInput) gameInput.remove();
-                    startPollingForUiModifications(); // START POLLING AFTER GAME IS LOADED
-                })
-                .catch((error) => {
-                    console.error(
-                        "SaneGames: Crazygames.load() failed:",
-                        error
-                    );
-                    let errorMessage = `Failed to load game "${
-                        options.gameName || gameSlug
-                    }". `;
-
-                    if (error && error.message) {
-                        errorMessage += `Error: ${error.message}. `;
-                        if (
-                            error.message
-                                .toLowerCase()
-                                .includes("x-frame-options") ||
-                            error.message
-                                .toLowerCase()
-                                .includes("refused to display") ||
-                            error.message
-                                .toLowerCase()
-                                .includes("sameorigin") ||
-                            error.message
-                                .toLowerCase()
-                                .includes("frame-ancestors")
-                        ) {
-                            errorMessage +=
-                                "This game's security settings (like X-Frame-Options or Content-Security-Policy) likely prevent it from being embedded here. Some games cannot be played on SaneGames due to these restrictions. ";
-                        }
-                    } else {
-                        errorMessage +=
-                            "An unknown error occurred with the CrazyGames SDK. ";
-                    }
-                    errorMessage +=
-                        "Check the browser console (F12) for more specific details. You can try a different game.";
-
-                    if (loader) {
-                        loader.textContent = errorMessage;
-                        loader.style.display = "flex";
-                    }
-                    if (gameInput) {
-                        gameInput.classList.add("active");
-                        gameInput.style.display = "flex";
-                    }
-                    stopPollingForUiModifications(); // Stop polling if game loading fails
-                });
-        } else {
-            console.error(
-                "SaneGames: Crazygames SDK loaded, but window.Crazygames.load is not available or SDK is malformed."
-            );
-            if (loader) {
-                loader.textContent =
-                    "CrazyGames SDK loaded incorrectly. The SaneGames client might be outdated, or there's an issue with the SDK itself. Try refreshing.";
-                loader.style.display = "flex";
-            }
-            if (gameInput) {
-                gameInput.classList.add("active");
-                gameInput.style.display = "flex";
-            }
-            stopPollingForUiModifications(); // Stop polling if SDK is malformed
-        }
-    };
-    document.head.appendChild(script);
+    msg += "Try a different slug, or check the browser console for details.";
+    setLoaderVisible(true, msg);
+    setInputVisible(true);
+  }
 }
 
+/* -----------------------------
+   Public API (called by HTML)
+----------------------------- */
 function loadGameFromInput() {
-    if (typeof window === "undefined" || typeof document === "undefined")
-        return;
-    let gameSlugInput = document.getElementById("gameSlugInput");
-    if (gameSlugInput) {
-        let gameSlug = gameSlugInput.value.trim();
-        if (gameSlug) {
-            let currentUrl = new URL(window.location.href);
-            currentUrl.search = `?game=${encodeURIComponent(gameSlug)}`;
-            window.location.href = currentUrl.toString();
-        } else {
-            alert("Please enter a game slug.");
-        }
-    }
+  const input = $("gameSlugInput");
+  if (!input) return;
+
+  const slug = input.value.trim();
+  if (!slug) {
+    alert("Please enter a game slug.");
+    return;
+  }
+  setSlugInURL(slug);
 }
+window.loadGameFromInput = loadGameFromInput;
 
-function recommendations() {
-    if (typeof document === "undefined") return;
-    const popup = document.getElementById("recommendationsPopup");
-    if (popup) popup.classList.add("active");
-}
+/* -----------------------------
+   Keyboard shortcuts
+----------------------------- */
+document.addEventListener("keydown", (e) => {
+  // "/" focuses slug input (unless already typing in an input/textarea)
+  const tag = (document.activeElement && document.activeElement.tagName) || "";
+  const typing = tag === "INPUT" || tag === "TEXTAREA";
 
-function closeRecommendations() {
-    if (typeof document === "undefined") return;
-    const popup = document.getElementById("recommendationsPopup");
-    if (popup) popup.classList.remove("active");
-}
+  if (e.key === "/" && !typing) {
+    e.preventDefault();
+    const input = $("gameSlugInput");
+    if (input) input.focus();
+  }
 
-if (typeof window !== "undefined") {
-    window.onclick = function (event) {
-        if (typeof document === "undefined") return;
-        const popup = document.getElementById("recommendationsPopup");
-        if (
-            popup &&
-            event.target == popup &&
-            popup.classList.contains("active")
-        ) {
-            closeRecommendations();
-        }
-    };
-    window.addEventListener("beforeunload", stopPollingForUiModifications);
+  // Enter loads game when input focused
+  if (e.key === "Enter" && document.activeElement && document.activeElement.id === "gameSlugInput") {
+    e.preventDefault();
+    loadGameFromInput();
+  }
+});
 
-    // Keyboard shortcuts
-    document.addEventListener("keydown", function(e) {
-        if (typeof document === "undefined") return;
-        
-        // Forward slash to focus search
-        if (e.key === "/" && document.activeElement.tagName !== "INPUT") {
-            e.preventDefault();
-            const gameInput = document.getElementById("gameSlugInput");
-            if (gameInput) {
-                gameInput.focus();
-            }
-        }
-        
-        // Enter to load game when focused on input
-        if (e.key === "Enter" && document.activeElement.id === "gameSlugInput") {
-            e.preventDefault();
-            loadGameFromInput();
-        }
-
-        // Question mark for help/shortcuts (could expand later)
-        if (e.key === "?" && !e.ctrlKey && !e.metaKey) {
-            e.preventDefault();
-            console.log("SaneGames Keyboard Shortcuts:\n/ - Focus game search\nEnter - Load game (when in search)\n? - Show help");
-        }
-    });
-}
-
+/* -----------------------------
+   Boot
+----------------------------- */
 loadGame();
