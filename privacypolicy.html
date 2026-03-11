@@ -1,274 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>Privacy Policy | DivineGames</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DivineGames — Privacy Policy & License</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
 
-    <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <meta name="theme-color" content="#5335CC" />
 
-    <meta name="description" content="A better client for all CrazyGames games, with no ads or annoying UI." />
-    <meta name="keywords" content="games, free games, online games, no ads, crazygames, client, wrapper, open source" />
-    <meta name="author" content="SaneGames (Elouan Grimm)" />
+  <meta name="description" content="DivineGames Privacy Policy and Apache License 2.0." />
+  <meta name="keywords" content="DivineGames, privacy policy, license, apache 2.0" />
+  <meta name="author" content="DivineGames" />
 
-    <meta property="og:title" content="SaneGames" />
-    <meta property="og:description" content="A better client for all CrazyGames games, with no ads or annoying UI." />
-    <meta property="og:image" content="assets/thumbnail.png" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://sanegames.elouan.xyz/" />
+  <!-- Keep your existing site styles -->
+  <link rel="stylesheet" href="style.css" />
 
-    <script>
-        !function (e, t) { var s, r, o, i; t.__SV || (window.posthog = t, t._i = [], t.init = function (n, a, p) { function g(e, t) { var s = t.split("."); 2 == s.length && (e = e[s[0]], t = s[1]), e[t] = function () { e.push([t].concat(Array.prototype.slice.call(arguments, 0))) } } (o = e.createElement("script")).type = "text/javascript", o.crossOrigin = "anonymous", o.async = !0, o.src = a.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js", (i = e.getElementsByTagName("script")[0]).parentNode.insertBefore(o, i); var c = t; for (void 0 !== p ? c = t[p] = [] : p = "posthog", c.people = c.people || [], c.toString = function (e) { var t = "posthog"; return "posthog" !== p && (t += "." + p), e || (t += " (stub)"), t }, c.people.toString = function () { return c.toString(1) + ".people (stub)" }, s = "init bs ws ge fs capture De Ai $s register register_once register_for_session unregister unregister_for_session Is getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty xs Ss createPersonProfile Es gs opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing ys debug ks getPageViewId captureTraceFeedback captureTraceMetric".split(" "), r = 0; r < s.length; r++)g(c, s[r]); t._i.push([n, a, p]) }, t.__SV = 1) }(document, window.posthog || []),
-            posthog.init("phc_W4DPbbp1Qbz4lPVtWrFF54GFUabBHpKzNJx9U6fryBZ", {
-                api_host: "https://posthog.elouan.xyz/ingest",
-                ui_host: "https://us.posthog.com",
-                person_profiles: "always",
-            });
-    </script>
+  <!-- Page-only styling (kept small, matches your dark/purple theme) -->
+  <style>
+    /* Background canvas (particles) */
+    #bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.55;
+      pointer-events: none;
+    }
 
-    <link rel="stylesheet" href="style.css" />
+    /* Top nav */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.55);
+      border-bottom: 1px solid rgba(100, 116, 139, 0.18);
+    }
+    .topbar-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      text-decoration: none;
+      color: #f1f5f9;
+    }
+    .brand img {
+      width: 34px;
+      height: 34px;
+    }
+    .brand span {
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+    .navlinks {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .navlinks a {
+      text-decoration: none;
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      padding: 7px 10px;
+      border-radius: 10px;
+      color: #e9e3ff;
+      background: rgba(83, 53, 204, 0.10);
+    }
+    .navlinks a:hover {
+      background: rgba(83, 53, 204, 0.20);
+      border-color: rgba(167, 139, 250, 0.45);
+    }
+    .navlinks a.active {
+      background: rgba(83, 53, 204, 0.35);
+      border-color: rgba(167, 139, 250, 0.75);
+    }
 
-    <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    /* Main card layout */
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px 16px 40px;
+      animation: fadeUp 520ms ease both;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1em;
-        }
+    .card {
+      background: rgba(30, 41, 59, 0.45);
+      border: 1px solid rgba(100, 116, 139, 0.25);
+      border-radius: 14px;
+      padding: 18px 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+    .title {
+      margin: 10px 0 4px;
+      font-size: 1.65rem;
+      color: #fff;
+      letter-spacing: -0.6px;
+    }
+    .subtitle {
+      margin: 0 0 14px;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
 
-        th {
-            background-color: #f2f2f2;
-        }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
 
-        .last-updated {
-            font-style: italic;
-            color: #555;
-            margin-bottom: 20px;
-        }
-    </style>
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(83, 53, 204, 0.18);
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      color: #e9e3ff;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+
+    .policy h3 {
+      margin: 12px 0 6px;
+      font-size: 1.05rem;
+    }
+
+    .muted {
+      color: #9fb0c7;
+      font-size: 0.92rem;
+    }
+
+    /* License block */
+    pre.license {
+      background: rgba(2, 6, 23, 0.55);
+      border: 1px solid rgba(100, 116, 139, 0.25);
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      white-space: pre;
+      line-height: 1.35;
+      font-size: 12.5px;
+      color: #dbeafe;
+      margin: 12px 0 0;
+    }
+
+    /* Small animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      .page { animation: none; }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Privacy Policy for SaneGames</h1>
-        <p class="last-updated">Last Updated: May 22, 2025</p>
+  <!-- Particle background -->
+  <canvas id="bg" aria-hidden="true"></canvas>
 
-        <p>Welcome to SaneGames ("us", "we", or "our")! We operate the website <a
-                href="https://sanegames.elouan.xyz/">https://sanegames.elouan.xyz/</a> (hereinafter referred to as the
-            "Service").</p>
-        <p>This page informs you of our policies regarding the collection, use, and disclosure of personal data when you
-            use our Service and the choices you have associated with that data.</p>
-        <p>We use your data to provide and improve the Service. By using the Service, and subject to your choices
-            regarding cookies and tracking as described in our cookie notice and herein, you agree to the collection and
-            use of information in accordance with this policy.</p>
+  <!-- Top navigation (same idea as your other pages: Home / About / Privacy Policy) -->
+  <header class="topbar" role="banner">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="Go to DivineGames home">
+        <img src="assets/logo.png" alt="DivineGames Logo" />
+        <span>DivineGames</span>
+      </a>
 
-        <h2>1. Information Collection and Use</h2>
-        <p>We collect information for various purposes to provide and improve our Service to you.</p>
-
-        <h3>Types of Data Collected</h3>
-        <h4>a. Personal Data We Collect Directly</h4>
-        <p>SaneGames itself does not directly request or require you to submit personally identifiable information like
-            your name or email address to use the core features of the Service. If you choose to contact us directly
-            (e.g., via email if a contact method is provided elsewhere), we would then collect the information you
-            voluntarily provide in that communication.</p>
-
-        <h4>b. Usage Data & Cookies (Primarily via PostHog)</h4>
-        <p>When you access the Service and if you consent to analytics cookies, we, through our analytics provider
-            PostHog, may collect certain information automatically ("Usage Data"). This may include, but is not limited
-            to:</p>
-        <ul>
-            <li>Internet Protocol (IP) address (PostHog may process this to determine general location and may offer
-                anonymization features)</li>
-            <li>Browser type and version</li>
-            <li>Device type and operating system</li>
-            <li>Pages of our Service that you visit</li>
-            <li>The time and date of your visit</li>
-            <li>The time spent on those pages</li>
-            <li>Referring/exit pages</li>
-            <li>Clicks, scrolls, and other interactions with the Service</li>
-            <li>Unique identifiers assigned by PostHog for analytics purposes</li>
-            <li>Screen resolution</li>
-        </ul>
-        <p>We use cookies and similar tracking technologies to track activity on our Service if you provide consent for
-            such technologies via our cookie consent banner.</p>
-
-        <h3>Our Use of Cookies</h3>
-        <p>We use cookies for the following purposes, subject to your consent:</p>
-        <ul>
-            <li><strong>Essential Cookies:</strong> These are strictly necessary for the Service to function (e.g., to
-                load basic site features). These do not require consent but are mentioned for transparency.</li>
-            <li><strong>Preference Cookies (including Consent):</strong> We use a cookie to remember your cookie consent
-                preferences.</li>
-            <li><strong>Analytics Cookies (PostHog):</strong> If you consent, we use PostHog to help us understand how
-                our Service is being used. This helps us improve your experience and the functionality of SaneGames.
-                <ul>
-                    <li>We use a self-hosted instance of PostHog for product analytics, with data collection routed
-                        through <code>https://posthog.elouan.xyz</code>. PostHog helps us understand user behavior such
-                        as page views, clicks, feature usage, and session interactions. PostHog may collect data points
-                        as listed under "Usage Data" above. The PostHog user interface, which we may use to analyze this
-                        data, is hosted by PostHog at <code>https://us.posthog.com</code>. You can learn more about
-                        PostHog's general privacy practices at <a href="https://posthog.com/privacy" target="_blank"
-                            rel="noopener noreferrer">https://posthog.com/privacy</a>.</li>
-                </ul>
-            </li>
-        </ul>
-        <p>You provided consent for non-essential cookies via our cookie banner. You can typically change your cookie
-            preferences by clearing cookies in your browser for our site (<code>sanegames.elouan.xyz</code>), which
-            should cause the consent banner to reappear on your next visit, allowing you to make a new choice.</p>
-
-        <h2>2. Use of Data</h2>
-        <p>SaneGames uses the collected Usage Data (via PostHog, with your consent) for purposes such as:</p>
-        <ul>
-            <li>To provide, maintain, and improve our Service</li>
-            <li>To understand how users interact with SaneGames</li>
-            <li>To monitor the usage of our Service and identify popular games or features</li>
-            <li>To detect, prevent, and address technical issues or bugs</li>
-            <li>To analyze trends and gather insights for future development</li>
-        </ul>
-
-        <h2>3. Legal Basis for Processing Personal Data (GDPR)</h2>
-        <p>If you are from the European Economic Area (EEA), SaneGames' legal basis for collecting and using the
-            personal information described in this Privacy Policy depends on the Personal Data we collect and the
-            specific context in which we collect it.</p>
-        <p>We may process your Personal Data because:</p>
-        <ul>
-            <li>You have given us **consent** to do so (this is the primary basis for processing data via PostHog
-                analytics cookies).</li>
-            <li>The processing is in our **legitimate interests** for essential website operation and security, and it's
-                not overridden by your rights.</li>
-            <li>To comply with the law (if applicable).</li>
-        </ul>
-
-        <h2>4. Data Retention</h2>
-        <p>We will retain Usage Data collected via PostHog according to the configurations of our self-hosted PostHog
-            instance and subject to PostHog's data processing capabilities. We aim to retain this data only for as long
-            as it is necessary for the analytical purposes set out in this Privacy Policy.</p>
-        <p>Your cookie consent choices are stored in a cookie for up to 1 year, after which you may be asked for consent
-            again.</p>
-
-        <h2>5. Transfer of Data</h2>
-        <p>Usage Data collected via PostHog is sent to our self-hosted instance at
-            <code>https://posthog.elouan.xyz</code>. If this server is located outside your jurisdiction, your data will
-            be transferred there. Furthermore, we may access and analyze this data using PostHog's cloud-hosted user
-            interface at <code>https://us.posthog.com</code> (located in the United States). PostHog employs safeguards
-            such as Standard Contractual Clauses for such international data transfers and processing where applicable.
-        </p>
-        <p>Your consent to this Privacy Policy, and your consent to analytics cookies, represents your agreement to such
-            transfers if they occur.</p>
-        <p>SaneGames will take reasonable steps to ensure that your data is treated securely and in accordance with this
-            Privacy Policy.</p>
-
-        <h2>6. Disclosure of Data</h2>
-        <p>We do not sell your personal information.</p>
-        <p>We may disclose Usage Data in an aggregated or de-identified form for analytical or statistical purposes. We
-            may be required to disclose your Personal Data if required to do so by law or in response to valid requests
-            by public authorities (e.g., a court or a government agency).</p>
-
-        <h2>7. Service Providers</h2>
-        <p>We use PostHog as a third-party Service Provider to assist us in analyzing how our Service is used.</p>
-        <ul>
-            <li><strong>PostHog:</strong> As described, PostHog provides product analytics services. Their processing of
-                data is governed by our instructions (as the data controller for our instance) and their own terms and
-                privacy policy.</li>
-        </ul>
-
-        <h2>8. Your Data Protection Rights</h2>
-        <p>Depending on your location and applicable law, you may have certain data protection rights. SaneGames aims to
-            take reasonable steps to allow you to correct, amend, delete, or limit the use of any Personal Data we might
-            hold about you (which, for SaneGames, is primarily Usage Data linked to identifiers set by PostHog).</p>
-
-        <h3>General Rights:</h3>
-        <ul>
-            <li><strong>Right to Withdraw Consent:</strong> Where we rely on your consent (e.g., for analytics cookies),
-                you have the right to withdraw that consent at any time. You can do this by clearing your browser
-                cookies for our site to make the consent banner reappear or by using any specific opt-out mechanisms we
-                may provide.</li>
-            <li><strong>Right to Lodge a Complaint:</strong> You have the right to lodge a complaint with a data
-                protection authority about our collection and use of your Personal Data.</li>
-        </ul>
-
-        <h3>If you are a resident of the European Economic Area (EEA), you have specific GDPR rights:</h3>
-        <ul>
-            <li>The right to access, update, or delete the information PostHog holds that may be associated with you
-                (subject to PostHog's capabilities and our ability to identify your data).</li>
-            <li>The right of rectification if that information is inaccurate or incomplete.</li>
-            <li>The right to object to our processing of your Personal Data (primarily by not consenting or withdrawing
-                consent for analytics).</li>
-            <li>The right of restriction on processing your Personal Data.</li>
-            <li>The right to data portability for information you provided to us (likely not applicable as we don't
-                collect direct submissions from you).</li>
-        </ul>
-
-        <h3>If you are a resident of California (CCPA/CPRA):</h3>
-        <p>You have the right to:</p>
-        <ul>
-            <li>Know what personal information is being collected about you (as described in this policy).</li>
-            <li>Access your personal information (we will endeavor to provide access to Usage Data associated with you,
-                subject to identification and PostHog's capabilities).</li>
-            <li>Delete your personal information (we will endeavor to delete Usage Data associated with you, subject to
-                identification and PostHog's capabilities).</li>
-            <li>Opt-out of the "sale" or "sharing" of your personal information. SaneGames does not "sell" your personal
-                information or "share" it for cross-context behavioral advertising. Our use of PostHog is for internal
-                analytics to improve our Service. However, you can opt-out of this analytics tracking by declining
-                consent via our cookie banner or by using PostHog's opt-out mechanism if you have previously consented
-                (see below).</li>
-            <li>Non-discrimination for exercising your CCPA rights.</li>
-        </ul>
-        <p>To exercise your rights, or if you wish to opt-out of PostHog tracking after initially consenting, you can
-            contact us at [Your Support Email, e.g., privacy@sanegames.elouan.xyz - REPLACE THIS]. We may also implement
-            PostHog's specific opt-out functions; if so, details will be provided here or via our cookie management
-            tool. Alternatively, clearing your cookies for our site will allow you to make a new consent choice.</p>
-
-        <h2>9. Security of Data</h2>
-        <p>The security of your data is important to us. We utilize a self-hosted PostHog instance to have more control
-            over the collected analytics data. However, remember that no method of transmission over the Internet or
-            method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect
-            your data, we cannot guarantee its absolute security.</p>
-
-        <h2>10. Links to Other Sites</h2>
-        <p>Our Service contains links to games hosted on third-party websites (e.g., CrazyGames). If you click on a
-            third-party link, you will be directed to that third-party's site. We strongly advise you to review the
-            Privacy Policy of every site you visit. We have no control over and assume no responsibility for the
-            content, privacy policies, or practices of any third-party sites or services.</p>
-
-        <h2>11. Children's Privacy</h2>
-        <p>Our Service is not intended for individuals under the age of 13 (or a higher age of digital consent if
-            applicable in your jurisdiction, e.g., 16 in some parts of the EU). We do not knowingly collect personally
-            identifiable information from children. If you are a parent or guardian and you are aware that your child
-            has provided us with Personal Data (for instance, if PostHog inadvertently collected data from a user
-            identified as a child), please contact us. If we become aware that we have collected Personal Data from
-            children without verification of parental consent, we will take steps to remove that information from our
-            systems.</p>
-
-        <h2>12. Changes to This Privacy Policy</h2>
-        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new
-            Privacy Policy on this page and updating the "Last Updated" date at the top.</p>
-        <p>You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy
-            are effective when they are posted on this page.</p>
-
-        <div class="contact-info">
-            <h2>13. Contact Us</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us:</p>
-            <ul>
-                <li>By email: hello@elouan.xyz</li>
-                <li>By BlueSky: @elouan.xyz</li>
-            </ul>
-        </div>
+      <nav class="navlinks" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a class="active" href="privacypolicy.html" aria-current="page">Privacy Policy</a>
+      </nav>
     </div>
+  </header>
 
+  <main class="page" role="main">
+    <section class="card policy" aria-label="Privacy policy content">
+      <div class="pill">Privacy Policy</div>
+      <h1 class="title">Privacy Policy</h1>
+      <p class="subtitle">
+        Last updated: <strong>March 11, 2026</strong>
+      </p>
+
+      <div class="grid">
+        <div>
+          <h3>1) What this policy covers</h3>
+          <p>
+            This page explains what information DivineGames may process when you visit the site and
+            how that information is used.
+          </p>
+
+          <h3>2) Information you provide</h3>
+          <p class="muted">
+            DivineGames does not require account creation. If you contact the site owner (for example,
+            by email or through a form you add later), you may provide personal information such as your
+            email address and the contents of your message.
+          </p>
+
+          <h3>3) Game slugs and usage</h3>
+          <p class="muted">
+            If you enter a game slug or open a URL like <code>?game=some-slug</code>, that slug is used
+            to load the requested game. The slug may appear in your browser history and in server logs
+            (if you host this site with logging enabled).
+          </p>
+
+          <h3>4) Analytics (if enabled)</h3>
+          <p class="muted">
+            If you have analytics enabled (for example, PostHog or similar), the analytics provider may
+            collect device/browser information and event data (like which page you visited). If you don’t
+            want analytics, remove the analytics script from your pages.
+          </p>
+
+          <h3>5) Cookies and local storage</h3>
+          <p class="muted">
+            DivineGames may use cookies or local storage for basic functionality (for example, saving a theme
+            preference). Third-party services you embed may also set cookies.
+          </p>
+
+          <h3>6) Third-party content</h3>
+          <p class="muted">
+            Games and related assets are served by third-party providers. Those providers may collect information
+            according to their own privacy policies. DivineGames is not responsible for third-party practices.
+          </p>
+
+          <h3>7) Security</h3>
+          <p class="muted">
+            No method of transmission or storage is 100% secure. You use the site at your own risk.
+          </p>
+
+          <h3>8) Changes</h3>
+          <p class="muted">
+            This policy may be updated over time. Changes will be posted on this page with a new “Last updated” date.
+          </p>
+
+          <h3>9) Contact</h3>
+          <p class="muted">
+            Site owner: <strong>Dawud Hazell</strong> (Workspace: DJR). Add your preferred contact email or method here.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top: 14px;" aria-label="License content">
+      <div class="pill">License</div>
+      <h2 class="title" style="font-size: 1.35rem;">Apache License 2.0</h2>
+      <p class="subtitle">
+        The text below is the Apache License, Version 2.0 (January 2004).
+      </p>
+
+      <pre class="license">                                 Apache License
+                           Version 2.0, January 2004
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [2026] [Divine]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.</pre>
+    </section>
+
+    <footer style="text-align:center; margin-top: 16px; color:#9fb0c7; font-size: 0.9rem;">
+      <p style="margin: 0.5em 0;">
+        © <span id="year"></span> DivineGames. Not affiliated with CrazyGames or other third-party IP.
+      </p>
+    </footer>
+  </main>
+
+  <!-- Optional: keep your existing main.js if you want (it won't break this page) -->
+  <script src="main.js"></script>
+
+  <!-- Particles animation (self-contained, one file, lightweight) -->
+  <script>
+    (function () {
+      const year = document.getElementById("year");
+      if (year) year.textContent = new Date().getFullYear();
+
+      const canvas = document.getElementById("bg");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+      let w = 0, h = 0;
+      function resize() {
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      window.addEventListener("resize", resize, { passive: true });
+      resize();
+
+      const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const N = prefersReduced ? 22 : 60;
+
+      const particles = Array.from({ length: N }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 1.2 + Math.random() * 2.2,
+        vx: (Math.random() - 0.5) * (prefersReduced ? 0.18 : 0.45),
+        vy: (Math.random() - 0.5) * (prefersReduced ? 0.18 : 0.45),
+        a: 0.35 + Math.random() * 0.5
+      }));
+
+      function step() {
+        ctx.clearRect(0, 0, w, h);
+
+        // subtle gradient glow
+        const g = ctx.createRadialGradient(w * 0.25, h * 0.2, 30, w * 0.25, h * 0.2, Math.max(w, h) * 0.8);
+        g.addColorStop(0, "rgba(167,139,250,0.14)");
+        g.addColorStop(1, "rgba(15,23,42,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+
+        // particles + links
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx; p.y += p.vy;
+
+          if (p.x < -20) p.x = w + 20;
+          if (p.x > w + 20) p.x = -20;
+          if (p.y < -20) p.y = h + 20;
+          if (p.y > h + 20) p.y = -20;
+
+          // links
+          for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j];
+            const dx = p.x - q.x, dy = p.y - q.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const max = prefersReduced ? 110 : 140;
+            if (dist < max) {
+              const t = 1 - dist / max;
+              ctx.strokeStyle = `rgba(167,139,250,${0.14 * t})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.stroke();
+            }
+          }
+
+          // dot
+          ctx.fillStyle = `rgba(226,232,240,${p.a})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(step);
+      }
+
+      requestAnimationFrame(step);
+    })();
+  </script>
 </body>
-
 </html>
